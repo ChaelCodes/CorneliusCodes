@@ -1,11 +1,11 @@
 [package]
-authors = ["Martin Amps <https://twitter.com/martinamps>"]
-name = "starter-snake-rust"
+authors = ["Martin Amps <https://twitter.com/martinamps>", "ChaelCodes <https://twitter.com/ChaelCodes>"]
+name = "cornelius-codes"
 version = "1.0.0"
 edition = "2018"
 
 homepage = "https://play.battlesnake.com"
-repository = "https://github.com/BattlesnakeOfficial/starter-snake-rust/"
+repository = "https://github.com/ChaelCodes/CorneliusCodes"
 
 readme = "README.md"
 keywords = ["battlesnake"]

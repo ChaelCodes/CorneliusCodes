@@ -12,8 +12,8 @@ pub fn get_info() -> JsonValue {
     // Personalize the look of your snake per https://docs.battlesnake.com/references/personalization
     return json!({
         "apiversion": "1",
-        "author": "",
-        "color": "#888888",
+        "author": "ChaelCodes",
+        "color": "#F09383",
         "head": "default",
         "tail": "default",
     });
