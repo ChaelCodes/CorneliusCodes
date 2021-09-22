@@ -8,7 +8,7 @@ This is a basic implementation of the [Battlesnake API](https://docs.battlesnake
 ## Really Serious Snake Etiquette
 
 Remember to always treat Cornelius like a proper little snake. Dont refer to their brain as "code" and respect his snakeness. Cornelius likes to be refered to by name first in a message, and then is happy being refered to with gender neutarl pronouns like "They"/"Them"/"Their".
-For example, rather than saying "We need to fix the bug where they doesnt go to `0, 0`" you should say "The poor little love, Cornelius, is afraid of `0, 0` on the board and could do with some help getting there".
+For example, rather than saying "We need to fix the bug where they don't go to `0, 0`" you should say "The poor little love, Cornelius, is afraid of `0, 0` on the board and could do with some help getting there".
 
 ## Technologies Used
 
