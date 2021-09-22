@@ -37,25 +37,10 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
     .into_iter()
     .collect();
 
-    // Step 0: Don't let mer Battlesnake move back in on its own neck
+    // Step 0: Don't let your Battlesnake move back in on its own neck
     let my_head = &me.head;
-    // let my_neck = &me.body[1];
-    // if my_neck.x < my_head.x {
-    //     // my neck is left of my head
-    //     possible_moves.insert("left", false);
-    // } else if my_neck.x > my_head.x {
-    //     // my neck is right of my head
-    //     possible_moves.insert("right", false);
-    // } else if my_neck.y < my_head.y {
-    //     // my neck is below my head
-    //     possible_moves.insert("down", false);
-    // } else if my_neck.y > my_head.y {
-    //     // my neck is above my head
-    //     possible_moves.insert("up", false);
-    // }
 
-    // TODO: Step 1 - Don't hit walls.
-    // Use board information to prevent mer Battlesnake from moving beyond the boundaries of the board.
+    // Use board information to prevent your Battlesnake from moving beyond the boundaries of the board.
     let left = |head: &Coord| Coord {
         x: head.x - 1,
         y: head.y,
@@ -77,12 +62,12 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
     possible_moves.insert("up", valid_move(&up(&my_head), &board, &me));
     possible_moves.insert("down", valid_move(&down(&my_head), &board, &me));
 
-    // TODO: Step 2 - Don't hit merself.
-    // Use body information to prevent mer Battlesnake from colliding with itself.
+    // TODO: Step 2 - Don't hit yourself.
+    // Use body information to prevent your Battlesnake from colliding with itself.
     // body = move_req.body
 
     // TODO: Step 3 - Don't collide with others.
-    // Use snake vector to prevent mer Battlesnake from colliding with others.
+    // Use snake vector to prevent your Battlesnake from colliding with others.
     // snakes = move_req.board.snakes
 
     // TODO: Step 4 - Find food.
