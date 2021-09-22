@@ -35,7 +35,7 @@ pub struct Board {
     hazards: Vec<Coord>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 pub struct Battlesnake {
     id: String,
     name: String,
@@ -50,7 +50,7 @@ pub struct Battlesnake {
     squad: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 pub struct Coord {
     x: u32,
     y: u32,
