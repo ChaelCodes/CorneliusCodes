@@ -19,35 +19,28 @@ mod logic;
 // Request types derived from https://docs.battlesnake.com/references/api#object-definitions
 // For a full example of Game Board data, see https://docs.battlesnake.com/references/api/sample-move-request
 
-#[derive(Deserialize, Serialize, Debug)]
-pub struct Game {
-    id: String,
-    ruleset: HashMap<String, Value>,
-    timeout: u32,
-}
-
-#[derive(Deserialize, Serialize, Debug)]
-pub struct Board {
-    height: u32,
-    width: u32,
-    food: Vec<Coord>,
-    snakes: Vec<Battlesnake>,
-    hazards: Vec<Coord>,
-}
-
 #[derive(Deserialize, Serialize, Debug, Default)]
 pub struct Battlesnake {
-    id: String,
-    name: String,
-    health: u32,
     body: Vec<Coord>,
     head: Coord,
-    length: u32,
+    health: u32,
+    id: String,
     latency: String,
+    length: u32,
+    name: String,
 
     // Used in non-standard game modes
     shout: Option<String>,
     squad: Option<String>,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct Board {
+    food: Vec<Coord>,
+    hazards: Vec<Coord>,
+    height: u32,
+    snakes: Vec<Battlesnake>,
+    width: u32,
 }
 
 #[derive(Deserialize, Serialize, Debug, Default)]
@@ -57,10 +50,17 @@ pub struct Coord {
 }
 
 #[derive(Deserialize, Serialize, Debug)]
+pub struct Game {
+    id: String,
+    ruleset: HashMap<String, Value>,
+    timeout: u32,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
 pub struct GameState {
+    board: Board,
     game: Game,
     turn: u32,
-    board: Board,
     you: Battlesnake,
 }
 
@@ -68,8 +68,6 @@ pub struct GameState {
 fn handle_index() -> JsonValue {
     logic::get_info()
 }
-
-
 
 #[post("/start", format = "json", data = "<start_req>")]
 fn handle_start(start_req: Json<GameState>) -> Status {
@@ -105,22 +103,25 @@ fn handle_end(end_req: Json<GameState>) -> Status {
 fn main() {
     let address = "0.0.0.0";
     let env_port = env::var("PORT").ok();
-    let env_port = env_port
-        .as_ref()
-        .map(String::as_str)
-        .unwrap_or("8080");
+    let env_port = env_port.as_ref().map(String::as_str).unwrap_or("8080");
     let port = env_port.parse::<u16>().unwrap();
 
     env_logger::init();
 
     let config = Config::build(Environment::Development)
-      .address(address)
-      .port(port)
-      .finalize()
-      .unwrap();
+        .address(address)
+        .port(port)
+        .finalize()
+        .unwrap();
 
-    info!("Starting Battlesnake Server at http://{}:{}...", address, port);
+    info!(
+        "Starting Battlesnake Server at http://{}:{}...",
+        address, port
+    );
     rocket::custom(config)
-        .mount("/", routes![handle_index, handle_start, handle_move, handle_end])
+        .mount(
+            "/",
+            routes![handle_index, handle_start, handle_move, handle_end],
+        )
         .launch();
 }

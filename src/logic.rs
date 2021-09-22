@@ -14,8 +14,8 @@ pub fn get_info() -> JsonValue {
         "apiversion": "1",
         "author": "ChaelCodes",
         "color": "#F09383",
-        "head": "default",
-        "tail": "default",
+        "head": "bendr",
+        "tail": "round-bum",
     });
 }
 
@@ -37,25 +37,10 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
     .into_iter()
     .collect();
 
-    // Step 0: Don't let mer Battlesnake move back in on its own neck
+    // Step 0: Don't let your Battlesnake move back in on its own neck
     let my_head = &me.head;
-    // let my_neck = &me.body[1];
-    // if my_neck.x < my_head.x {
-    //     // my neck is left of my head
-    //     possible_moves.insert("left", false);
-    // } else if my_neck.x > my_head.x {
-    //     // my neck is right of my head
-    //     possible_moves.insert("right", false);
-    // } else if my_neck.y < my_head.y {
-    //     // my neck is below my head
-    //     possible_moves.insert("down", false);
-    // } else if my_neck.y > my_head.y {
-    //     // my neck is above my head
-    //     possible_moves.insert("up", false);
-    // }
 
-    // TODO: Step 1 - Don't hit walls.
-    // Use board information to prevent mer Battlesnake from moving beyond the boundaries of the board.
+    // Use board information to prevent your Battlesnake from moving beyond the boundaries of the board.
     let left = |head: &Coord| Coord {
         x: head.x - 1,
         y: head.y,
@@ -77,12 +62,12 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
     possible_moves.insert("up", valid_move(&up(&my_head), &board, &me));
     possible_moves.insert("down", valid_move(&down(&my_head), &board, &me));
 
-    // TODO: Step 2 - Don't hit merself.
-    // Use body information to prevent mer Battlesnake from colliding with itself.
+    // TODO: Step 2 - Don't hit yourself.
+    // Use body information to prevent your Battlesnake from colliding with itself.
     // body = move_req.body
 
     // TODO: Step 3 - Don't collide with others.
-    // Use snake vector to prevent mer Battlesnake from colliding with others.
+    // Use snake vector to prevent your Battlesnake from colliding with others.
     // snakes = move_req.board.snakes
 
     // TODO: Step 4 - Find food.
@@ -106,15 +91,15 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
 fn valid_move(spot: &Coord, board: &Board, me: &Battlesnake) -> bool {
     let board_width = board.width;
     let board_height = board.height;
-    let my_neck = || { &me.body[1] };
+    let my_neck = || &me.body[1];
 
     match spot {
-        Coord { y: 0, .. } => { println!("down"); return false; },
-        Coord { x: 0, .. } => { println!("left"); return false; },
-        Coord { y, .. } if y == &board_width => { println!("right"); return false; }, // Rust is weird
-        Coord { x, .. } if x == &board_height => { println!("up"); return false; },
-        Coord { x, y } if x == &my_neck().x && y == &my_neck().y => { println!("my neck"); return false; },
-        _ => { true }
+        Coord { y: 0, .. } => false,
+        Coord { x: 0, .. } => false,
+        Coord { y, .. } if y == &board_width => false, // Rust is weird
+        Coord { x, .. } if x == &board_height => false,
+        Coord { x, y } if x == &my_neck().x && y == &my_neck().y => false,
+        _ => true,
     }
 }
 
@@ -212,7 +197,7 @@ mod tests {
     fn head_will_travel() {
         let me = Battlesnake {
             body: vec![Coord { x: 5, y: 9 }, Coord { x: 5, y: 8 }],
-            ..Default::default() 
+            ..Default::default()
         };
         let board = Board {
             width: 10,
