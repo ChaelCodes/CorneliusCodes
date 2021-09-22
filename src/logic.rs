@@ -14,8 +14,8 @@ pub fn get_info() -> JsonValue {
         "apiversion": "1",
         "author": "ChaelCodes",
         "color": "#F09383",
-        "head": "default",
-        "tail": "default",
+        "head": "bendr",
+        "tail": "round-bum",
     });
 }
 
