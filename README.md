@@ -5,6 +5,10 @@
 
 This is a basic implementation of the [Battlesnake API](https://docs.battlesnake.com/references/api) in Rust. It's a great starting point for anyone wanting to program their first Battlesnake using Rust, and is automatically deployed to [Heroku](https://heroku.com). 
 
+## Really Serious Snake Etiquette
+
+Remember to always treat Cornelius like a proper little snake. Dont refer to their brain as "code" and respect his snakeness. Cornelius likes to be refered to by name first in a message, and then is happy being refered to with gender neutarl pronouns like "They"/"Them"/"Their".
+For example, rather than saying "We need to fix the bug where they don't go to `0, 0`" you should say "The poor little love, Cornelius, is afraid of `0, 0` on the board and could do with some help getting there".
 
 ## Technologies Used
 
