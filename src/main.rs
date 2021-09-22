@@ -69,8 +69,6 @@ fn handle_index() -> JsonValue {
     logic::get_info()
 }
 
-
-
 #[post("/start", format = "json", data = "<start_req>")]
 fn handle_start(start_req: Json<GameState>) -> Status {
     logic::start(
@@ -105,22 +103,25 @@ fn handle_end(end_req: Json<GameState>) -> Status {
 fn main() {
     let address = "0.0.0.0";
     let env_port = env::var("PORT").ok();
-    let env_port = env_port
-        .as_ref()
-        .map(String::as_str)
-        .unwrap_or("8080");
+    let env_port = env_port.as_ref().map(String::as_str).unwrap_or("8080");
     let port = env_port.parse::<u16>().unwrap();
 
     env_logger::init();
 
     let config = Config::build(Environment::Development)
-      .address(address)
-      .port(port)
-      .finalize()
-      .unwrap();
+        .address(address)
+        .port(port)
+        .finalize()
+        .unwrap();
 
-    info!("Starting Battlesnake Server at http://{}:{}...", address, port);
+    info!(
+        "Starting Battlesnake Server at http://{}:{}...",
+        address, port
+    );
     rocket::custom(config)
-        .mount("/", routes![handle_index, handle_start, handle_move, handle_end])
+        .mount(
+            "/",
+            routes![handle_index, handle_start, handle_move, handle_end],
+        )
         .launch();
 }

@@ -91,15 +91,15 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
 fn valid_move(spot: &Coord, board: &Board, me: &Battlesnake) -> bool {
     let board_width = board.width;
     let board_height = board.height;
-    let my_neck = || { &me.body[1] };
+    let my_neck = || &me.body[1];
 
     match spot {
-        Coord { y: 0, .. } => { println!("down"); return false; },
-        Coord { x: 0, .. } => { println!("left"); return false; },
-        Coord { y, .. } if y == &board_width => { println!("right"); return false; }, // Rust is weird
-        Coord { x, .. } if x == &board_height => { println!("up"); return false; },
-        Coord { x, y } if x == &my_neck().x && y == &my_neck().y => { println!("my neck"); return false; },
-        _ => { true }
+        Coord { y: 0, .. } => false,
+        Coord { x: 0, .. } => false,
+        Coord { y, .. } if y == &board_width => false, // Rust is weird
+        Coord { x, .. } if x == &board_height => false,
+        Coord { x, y } if x == &my_neck().x && y == &my_neck().y => false,
+        _ => true,
     }
 }
 
@@ -197,7 +197,7 @@ mod tests {
     fn head_will_travel() {
         let me = Battlesnake {
             body: vec![Coord { x: 5, y: 9 }, Coord { x: 5, y: 8 }],
-            ..Default::default() 
+            ..Default::default()
         };
         let board = Board {
             width: 10,
