@@ -19,35 +19,28 @@ mod logic;
 // Request types derived from https://docs.battlesnake.com/references/api#object-definitions
 // For a full example of Game Board data, see https://docs.battlesnake.com/references/api/sample-move-request
 
-#[derive(Deserialize, Serialize, Debug)]
-pub struct Game {
-    id: String,
-    ruleset: HashMap<String, Value>,
-    timeout: u32,
-}
-
-#[derive(Deserialize, Serialize, Debug)]
-pub struct Board {
-    height: u32,
-    width: u32,
-    food: Vec<Coord>,
-    snakes: Vec<Battlesnake>,
-    hazards: Vec<Coord>,
-}
-
 #[derive(Deserialize, Serialize, Debug, Default)]
 pub struct Battlesnake {
-    id: String,
-    name: String,
-    health: u32,
     body: Vec<Coord>,
     head: Coord,
-    length: u32,
+    health: u32,
+    id: String,
     latency: String,
+    length: u32,
+    name: String,
 
     // Used in non-standard game modes
     shout: Option<String>,
     squad: Option<String>,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct Board {
+    food: Vec<Coord>,
+    hazards: Vec<Coord>,
+    height: u32,
+    snakes: Vec<Battlesnake>,
+    width: u32,
 }
 
 #[derive(Deserialize, Serialize, Debug, Default)]
@@ -57,10 +50,17 @@ pub struct Coord {
 }
 
 #[derive(Deserialize, Serialize, Debug)]
+pub struct Game {
+    id: String,
+    ruleset: HashMap<String, Value>,
+    timeout: u32,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
 pub struct GameState {
+    board: Board,
     game: Game,
     turn: u32,
-    board: Board,
     you: Battlesnake,
 }
 
