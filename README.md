@@ -1,15 +1,15 @@
-# I would like to introduce you to my [Battlesnake](http://play.battlesnake.com?utm_source=github&utm_medium=readme&utm_campaign=go_starter&utm_content=homepage) friend Cornelius
+# I would like to introduce you to my [Battlesnake](http://play.battlesnake.com?utm_source=github&utm_medium=readme&utm_campaign=go_starter&utm_content=homepage) friend, Cornelius
 
 ![a corn snake](https://user-images.githubusercontent.com/8124558/132770698-160c6a6a-5b30-4b7d-9448-8982010b2027.jpg)
 
-Cornelius is built with Rust and is a wiggly darling.
+Cornelius is built with Rust, and they are a wiggly darling.
 
 
 ## Really Serious Snake Etiquette
 
-Remember to always treat Cornelius like a proper little snake. Dont refer to their brain as "code" and respect their snakeness. Cornelius uses "They"/"Them" pronouns.
+Remember to always treat Cornelius like a proper little snake. Don't refer to their brain as "code"; respect their snakeness. Cornelius uses "They"/"Them" pronouns.
 
-For example, rather than saying "We need to fix the bug where they don't go to `0, 0`" you should say "The poor little love, Cornelius, is afraid of `0, 0` on the board and could do with some help getting there".
+For example, rather than saying "We need to fix the bug where they don't go to `0, 0`", you should say "The poor little love, Cornelius, is afraid of `0, 0` on the board and could do with some help getting there".
 
 ## Technologies Used
 
