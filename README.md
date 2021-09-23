@@ -2,7 +2,7 @@
 
 ![a corn snake](https://user-images.githubusercontent.com/8124558/132770698-160c6a6a-5b30-4b7d-9448-8982010b2027.jpg)
 
-Cornelius is built with Rust, and he is a wiggly darling.
+Cornelius is built with Rust, and they are a wiggly darling.
 
 
 ## Really Serious Snake Etiquette
