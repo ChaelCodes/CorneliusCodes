@@ -34,7 +34,7 @@ pub struct Battlesnake {
     squad: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 pub struct Board {
     food: Vec<Coord>,
     hazards: Vec<Coord>,
