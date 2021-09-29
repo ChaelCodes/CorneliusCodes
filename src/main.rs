@@ -34,7 +34,7 @@ pub struct Battlesnake {
     squad: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 pub struct Board {
     food: Vec<Coord>,
     hazards: Vec<Coord>,
@@ -43,11 +43,17 @@ pub struct Board {
     width: u32,
 }
 
-#[derive(Deserialize, Serialize, Debug, Default)]
+#[derive(Copy, Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Coord {
     x: u32,
     y: u32,
 }
+impl PartialEq for Coord {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y
+    }
+}
+impl Eq for Coord {}
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Game {

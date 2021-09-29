@@ -41,26 +41,15 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
     let my_head = &me.head;
 
     // Use board information to prevent your Battlesnake from moving beyond the boundaries of the board.
-    let left = |head: &Coord| Coord {
-        x: head.x - 1,
-        y: head.y,
-    };
-    let right = |head: &Coord| Coord {
-        x: head.x + 1,
-        y: head.y,
-    };
-    let up = |head: &Coord| Coord {
-        x: head.x,
-        y: head.y + 1,
-    };
-    let down = |head: &Coord| Coord {
-        x: head.x,
-        y: head.y - 1,
-    };
-    possible_moves.insert("left", valid_move(&left(&my_head), &board, &me));
-    possible_moves.insert("right", valid_move(&right(&my_head), &board, &me));
-    possible_moves.insert("up", valid_move(&up(&my_head), &board, &me));
-    possible_moves.insert("down", valid_move(&down(&my_head), &board, &me));
+    let left = |head: &Coord| Coord { x: head.x - 1, y: head.y };
+    let right = |head: &Coord| Coord { x: head.x + 1, y: head.y };
+    let up = |head: &Coord| Coord { x: head.x, y: head.y + 1 };
+    let down = |head: &Coord| Coord { x: head.x, y: head.y - 1 };
+
+    possible_moves.insert("left", valid_move(&left(&my_head), &board));
+    possible_moves.insert("right", valid_move(&right(&my_head), &board));
+    possible_moves.insert("up", valid_move(&up(&my_head), &board));
+    possible_moves.insert("down", valid_move(&down(&my_head), &board));
 
     // TODO: Step 2 - Don't hit yourself.
     // Use body information to prevent your Battlesnake from colliding with itself.
@@ -88,25 +77,143 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
     return chosen;
 }
 
-fn valid_move(spot: &Coord, board: &Board, me: &Battlesnake) -> bool {
+fn spot_has_snake(spot: &Coord, snakes: &Vec<Battlesnake>) -> bool {
+    let mut snake_parts = vec![];
+    for snake in snakes {
+        snake_parts.push(snake.head);
+        snake_parts.append(&mut snake.body.clone());
+    }
+    if snake_parts.contains(&spot) {
+        return true;
+    }
+
+    false
+}
+
+#[cfg(test)]
+mod spot_has_snake_tests {
+    use super::*;
+
+    #[test]
+    fn no_snakes_in_spot() {
+        let me = Battlesnake {
+            name: "CorneliusCodes".to_string(),
+            body: vec![Coord { x: 3, y: 5 },
+                       Coord { x: 4, y: 5 },
+                       Coord { x: 5, y: 5 }],
+            ..Default::default()
+        };
+        let hettie = Battlesnake {
+            name: "Hettie".to_string(),
+            body: vec![
+                Coord { x: 0, y: 0 },
+                Coord { x: 1, y: 0 },
+            ],
+            ..Default::default()
+        };
+        let snakes = vec![hettie, me];
+        let spot = Coord { x: 5, y: 7 };
+        assert_eq!(spot_has_snake(&spot, &snakes), false);
+    }
+
+    #[test]
+    fn head_in_spot() {
+        let me = Battlesnake::default();
+        let hettie = Battlesnake {
+            name: "Hettie".to_string(),
+            head: Coord { x: 2, y: 3 },
+            body: vec![
+                Coord { x: 3, y: 3 },
+                Coord { x: 3, y: 2 },
+            ],
+            ..Default::default()
+        };
+        let snakes = vec![hettie, me];
+        let spot = Coord { x: 2, y: 3 };
+        assert_eq!(spot_has_snake(&spot, &snakes), true);
+    }
+
+    #[test]
+    fn tail_in_spot() {
+        let me = Battlesnake::default();
+        let hettie = Battlesnake {
+            name: "Hettie".to_string(),
+            head: Coord { x: 2, y: 3 },
+            body: vec![
+                Coord { x: 3, y: 3 },
+                Coord { x: 3, y: 2 },
+            ],
+            ..Default::default()
+        };
+        let snakes = vec![hettie, me];
+        let spot = Coord { x: 3, y: 2 };
+        assert_eq!(spot_has_snake(&spot, &snakes), true);
+    }
+
+    #[test]
+    fn hettie_is_in_spot() {
+        let me = Battlesnake {
+            name: "CorneliusCodes".to_string(),
+            body: vec![Coord { x: 3, y: 5 },
+                        Coord { x: 4, y: 5 },
+                        Coord { x: 5, y: 5 }],
+            ..Default::default()
+        };
+        let hettie = Battlesnake {
+            name: "Hettie".to_string(),
+            body: vec![
+                Coord { x: 0, y: 0 },
+                Coord { x: 1, y: 0 },
+            ],
+            ..Default::default()
+        };
+        let snakes = vec![hettie, me];
+        let spot = Coord { x: 0, y: 0 };
+        assert_eq!(spot_has_snake(&spot, &snakes),  true);
+    }
+
+    #[test]
+    fn i_am_in_spot() {
+        let me = Battlesnake {
+            name: "CorneliusCodes".to_string(),
+            body: vec![Coord { x: 3, y: 5 },
+                        Coord { x: 4, y: 5 },
+                        Coord { x: 5, y: 5 }],
+            ..Default::default()
+        };
+        let hettie = Battlesnake {
+            name: "Hettie".to_string(),
+            body: vec![
+                Coord { x: 0, y: 0 },
+                Coord { x: 1, y: 0 },
+            ],
+            ..Default::default()
+        };
+        let snakes = vec![hettie, me];
+        let spot = Coord { x: 5, y: 5 };
+        assert_eq!(spot_has_snake(&spot, &snakes), true);
+    }
+}
+
+fn valid_move(spot: &Coord, board: &Board) -> bool {
     let board_width = board.width;
     let board_height = board.height;
-    let my_neck = || &me.body[1];
 
     match spot {
         Coord { y: 0, .. } => false,
         Coord { x: 0, .. } => false,
         Coord { y, .. } if y == &board_width => false, // Rust is weird
         Coord { x, .. } if x == &board_height => false,
-        Coord { x, y } if x == &my_neck().x && y == &my_neck().y => false,
+        spot if spot_has_snake(spot, &board.snakes) => false,
         _ => true,
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod valid_move_tests {
     use super::*;
 
+    // Wall Tests
     #[test]
     fn head_will_not_hit_left_wall() {
         let me = Battlesnake {
@@ -117,10 +224,10 @@ mod tests {
             height: 10,
             food: vec![],
             hazards: vec![],
-            snakes: vec![],
+            snakes: vec![me],
         };
         let spot = Coord { x: 0, y: 5 };
-        let valid_move = valid_move(&spot, &board, &me);
+        let valid_move = valid_move(&spot, &board);
         assert_eq!(valid_move, false);
     }
 
@@ -134,10 +241,10 @@ mod tests {
             height: 10,
             food: vec![],
             hazards: vec![],
-            snakes: vec![],
+            snakes: vec![me],
         };
         let spot = Coord { x: 10, y: 5 };
-        let valid_move = valid_move(&spot, &board, &me);
+        let valid_move = valid_move(&spot, &board);
         assert_eq!(valid_move, false);
     }
 
@@ -151,10 +258,10 @@ mod tests {
             height: 10,
             food: vec![],
             hazards: vec![],
-            snakes: vec![],
+            snakes: vec![me],
         };
         let spot = Coord { x: 5, y: 10 };
-        let valid_move = valid_move(&spot, &board, &me);
+        let valid_move = valid_move(&spot, &board);
         assert_eq!(valid_move, false);
     }
 
@@ -168,12 +275,14 @@ mod tests {
             height: 10,
             food: vec![],
             hazards: vec![],
-            snakes: vec![],
+            snakes: vec![me],
         };
         let spot = Coord { x: 5, y: 0 };
-        let valid_move = valid_move(&spot, &board, &me);
+        let valid_move = valid_move(&spot, &board);
         assert_eq!(valid_move, false);
     }
+
+    // Collision Tests
 
     #[test]
     fn do_not_hit_me() {
@@ -186,10 +295,30 @@ mod tests {
             height: 10,
             food: vec![],
             hazards: vec![],
-            snakes: vec![],
+            snakes: vec![me],
         };
         let spot = Coord { x: 5, y: 5 };
-        let valid_move = valid_move(&spot, &board, &me);
+        let valid_move = valid_move(&spot, &board);
+        assert_eq!(valid_move, false);
+    }
+
+    #[test]
+    fn do_not_bite_hettie() {
+        let me = Battlesnake::default();
+        let hettie = Battlesnake {
+            name: "Hettie".to_string(),
+            body: vec![
+                Coord { x: 3, y: 2 },
+                Coord { x: 4, y: 2 },
+            ],
+            ..Default::default()
+        };
+        let board = Board {
+            snakes: vec![hettie, me],
+            ..Default::default()
+        };
+        let spot = Coord { x: 4, y: 2 };
+        let valid_move = valid_move(&spot, &board);
         assert_eq!(valid_move, false);
     }
 
@@ -204,10 +333,10 @@ mod tests {
             height: 10,
             food: vec![],
             hazards: vec![],
-            snakes: vec![],
+            snakes: vec![me],
         };
         let spot = Coord { x: 5, y: 5 };
-        let valid_move = valid_move(&spot, &board, &me);
+        let valid_move = valid_move(&spot, &board);
         assert_eq!(valid_move, true);
     }
 }

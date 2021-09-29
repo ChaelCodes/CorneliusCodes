@@ -79,6 +79,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "cornelius-codes"
+version = "1.0.0"
+dependencies = [
+ "env_logger",
+ "log 0.4.14",
+ "rand",
+ "rocket",
+ "rocket_contrib",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "devise"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -709,19 +722,6 @@ name = "smallvec"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fe0f37c9e8f3c5a4a66ad655a93c74daac4ad00c441533bf5c6e7990bb42604e"
-
-[[package]]
-name = "starter-snake-rust"
-version = "0.1.0"
-dependencies = [
- "env_logger",
- "log 0.4.14",
- "rand",
- "rocket",
- "rocket_contrib",
- "serde",
- "serde_json",
-]
 
 [[package]]
 name = "state"
