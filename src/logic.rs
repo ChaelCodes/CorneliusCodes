@@ -78,13 +78,15 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
 }
 
 fn spot_has_snake(spot: &Coord, snakes: &Vec<Battlesnake>) -> bool {
+    let mut snake_parts = vec![];
     for snake in snakes {
-        for body in &snake.body {
-            if body.x == spot.x && body.y == spot.y {
-                return true;
-            }
-        }
+        snake_parts.push(snake.head);
+        snake_parts.append(&mut snake.body.clone());
     }
+    if snake_parts.contains(&spot) {
+        return true;
+    }
+
     false
 }
 
@@ -112,6 +114,40 @@ mod spot_has_snake_tests {
         let snakes = vec![hettie, me];
         let spot = Coord { x: 5, y: 7 };
         assert_eq!(spot_has_snake(&spot, &snakes), false);
+    }
+
+    #[test]
+    fn head_in_spot() {
+        let me = Battlesnake::default();
+        let hettie = Battlesnake {
+            name: "Hettie".to_string(),
+            head: Coord { x: 2, y: 3 },
+            body: vec![
+                Coord { x: 3, y: 3 },
+                Coord { x: 3, y: 2 },
+            ],
+            ..Default::default()
+        };
+        let snakes = vec![hettie, me];
+        let spot = Coord { x: 2, y: 3 };
+        assert_eq!(spot_has_snake(&spot, &snakes), true);
+    }
+
+    #[test]
+    fn tail_in_spot() {
+        let me = Battlesnake::default();
+        let hettie = Battlesnake {
+            name: "Hettie".to_string(),
+            head: Coord { x: 2, y: 3 },
+            body: vec![
+                Coord { x: 3, y: 3 },
+                Coord { x: 3, y: 2 },
+            ],
+            ..Default::default()
+        };
+        let snakes = vec![hettie, me];
+        let spot = Coord { x: 3, y: 2 };
+        assert_eq!(spot_has_snake(&spot, &snakes), true);
     }
 
     #[test]
