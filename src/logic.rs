@@ -183,6 +183,174 @@ mod spot_has_snake_tests {
     }
 }
 
+fn spot_might_have_snake(spot: &Coord, snakes: &Vec<Battlesnake>, me: &Battlesnake) -> bool {
+    let mut snake_parts = vec![];
+    for snake in snakes {
+        if snake.id != me.id && snake.length >= me.length {
+            let head = snake.head;
+
+            snake_parts.push(head.left());
+            snake_parts.push(head.right());
+            snake_parts.push(head.up());
+            snake_parts.push(head.down());
+        }
+    }
+    if snake_parts.contains(&spot) {
+        return true;
+    }
+
+    false
+}
+
+#[cfg(test)]
+mod spot_might_have_snake_tests {
+    use super::*;
+
+    #[test]
+    fn no_snakes_in_spot() {
+        let me = Battlesnake {
+            id: "me".to_string(),
+            name: "CorneliusCodes".to_string(),
+            head: Coord { x: 7, y: 6 },
+            length: 3,
+            ..Default::default()
+        };
+        let hettie = Battlesnake {
+            id: "hettie".to_string(),
+            name: "Hettie".to_string(),
+            head: Coord { x: 0, y: 0 },
+            length: 4,
+            ..Default::default()
+        };
+        let snakes = vec![hettie.clone(), me.clone()];
+        let spot = Coord { x: 5, y: 7 };
+        assert_eq!(spot_might_have_snake(&spot, &snakes, &me), false);
+    }
+
+    #[test]
+    fn larger_snake_head_right_of_spot() {
+        let me = Battlesnake {
+            id: "me".to_string(),
+            name: "CorneliusCodes".to_string(),
+            head: Coord { x: 7, y: 6 },
+            length: 3,
+            ..Default::default()
+        };
+        let head = Coord { x: 3, y: 5 };
+        let hettie = Battlesnake {
+            id: "hettie".to_string(),
+            name: "HettieCodes".to_string(),
+            head: head,
+            length: 4,
+            ..Default::default()
+        };
+        let snakes = vec![hettie];
+        let spot = head.right();
+        assert_eq!(spot_might_have_snake(&spot, &snakes, &me), true);
+    }
+
+    #[test]
+    fn larger_snake_head_left_of_spot() {
+        let me = Battlesnake {
+            id: "me".to_string(),
+            name: "CorneliusCodes".to_string(),
+            head: Coord { x: 7, y: 6 },
+            length: 3,
+            ..Default::default()
+        };
+        let head = Coord { x: 3, y: 5 };
+        let hettie = Battlesnake {
+            id: "hettie".to_string(),
+            name: "HettieCodes".to_string(),
+            head: head,
+            length: 4,
+            ..Default::default()
+        };
+        let snakes = vec![hettie];
+        let spot = head.left();
+        assert_eq!(spot_might_have_snake(&spot, &snakes, &me), true);
+    }
+
+    #[test]
+    fn same_size_snake_head_above_spot() {
+        let me = Battlesnake {
+            id: "me".to_string(),
+            name: "CorneliusCodes".to_string(),
+            head: Coord { x: 7, y: 6 },
+            length: 3,
+            ..Default::default()
+        };
+        let head = Coord { x: 3, y: 5 };
+        let hettie = Battlesnake {
+            id: "hettie".to_string(),
+            name: "HettieCodes".to_string(),
+            head: head,
+            length: 3,
+            ..Default::default()
+        };
+        let snakes = vec![hettie];
+        let spot = head.down();
+        assert_eq!(spot_might_have_snake(&spot, &snakes, &me), true);
+    }
+
+    #[test]
+    fn same_size_snake_head_below_spot() {
+        let me = Battlesnake {
+            id: "me".to_string(),
+            name: "CorneliusCodes".to_string(),
+            head: Coord { x: 7, y: 6 },
+            length: 3,
+            ..Default::default()
+        };
+        let head = Coord { x: 3, y: 5 };
+        let hettie = Battlesnake {
+            id: "hettie".to_string(),
+            name: "HettieCodes".to_string(),
+            head: head,
+            length: 3,
+            ..Default::default()
+        };
+        let snakes = vec![hettie];
+        let spot = head.up();
+        assert_eq!(spot_might_have_snake(&spot, &snakes, &me), true);
+    }
+
+    #[test]
+    fn smaller_snake_head_next_to_spot() {
+        let me = Battlesnake {
+            id: "me".to_string(),
+            name: "CorneliusCodes".to_string(),
+            head: Coord { x: 7, y: 6 },
+            length: 4,
+            ..Default::default()
+        };
+        let head = Coord { x: 3, y: 5 };
+        let hettie = Battlesnake {
+            id: "hettie".to_string(),
+            name: "HettieCodes".to_string(),
+            head: head,
+            length: 3,
+            ..Default::default()
+        };
+        let snakes = vec![hettie];
+        let spot = head.right();
+        assert_eq!(spot_might_have_snake(&spot, &snakes, &me), false);
+    }
+
+    #[test]
+    fn i_am_next_to_spot() {
+        let head = Coord { x: 3, y: 5 };
+        let me = Battlesnake {
+            id: "me".to_string(),
+            name: "CorneliusCodes".to_string(),
+            head: head,
+            ..Default::default()
+        };
+        let snakes = vec![me.clone()];
+        let spot = head.right();
+        assert_eq!(spot_might_have_snake(&spot, &snakes, &me), false);
+    }
+}
 
 fn valid_move(spot: &Coord, board: &Board, me: &Battlesnake) -> bool {
     let board_width = board.width;
@@ -194,6 +362,7 @@ fn valid_move(spot: &Coord, board: &Board, me: &Battlesnake) -> bool {
         Coord { y, .. } if y == &board_width => false, // Rust is weird
         Coord { x, .. } if x == &board_height => false,
         spot if spot_has_snake(spot, &board.snakes) => false,
+        spot if spot_might_have_snake(spot, &board.snakes, &me) => false,
         _ => true,
     }
 }
