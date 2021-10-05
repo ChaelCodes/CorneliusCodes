@@ -195,7 +195,8 @@ mod spot_has_snake_tests {
     }
 }
 
-fn valid_move(spot: &Coord, board: &Board) -> bool {
+
+fn valid_move(spot: &Coord, board: &Board, me: &Battlesnake) -> bool {
     let board_width = board.width;
     let board_height = board.height;
 
@@ -224,10 +225,10 @@ mod valid_move_tests {
             height: 10,
             food: vec![],
             hazards: vec![],
-            snakes: vec![me],
+            snakes: vec![me.clone()],
         };
         let spot = Coord { x: 0, y: 5 };
-        let valid_move = valid_move(&spot, &board);
+        let valid_move = valid_move(&spot, &board, &me);
         assert_eq!(valid_move, false);
     }
 
@@ -241,10 +242,10 @@ mod valid_move_tests {
             height: 10,
             food: vec![],
             hazards: vec![],
-            snakes: vec![me],
+            snakes: vec![me.clone()],
         };
         let spot = Coord { x: 10, y: 5 };
-        let valid_move = valid_move(&spot, &board);
+        let valid_move = valid_move(&spot, &board, &me);
         assert_eq!(valid_move, false);
     }
 
@@ -258,10 +259,10 @@ mod valid_move_tests {
             height: 10,
             food: vec![],
             hazards: vec![],
-            snakes: vec![me],
+            snakes: vec![me.clone()],
         };
         let spot = Coord { x: 5, y: 10 };
-        let valid_move = valid_move(&spot, &board);
+        let valid_move = valid_move(&spot, &board, &me);
         assert_eq!(valid_move, false);
     }
 
@@ -275,10 +276,10 @@ mod valid_move_tests {
             height: 10,
             food: vec![],
             hazards: vec![],
-            snakes: vec![me],
+            snakes: vec![me.clone()],
         };
         let spot = Coord { x: 5, y: 0 };
-        let valid_move = valid_move(&spot, &board);
+        let valid_move = valid_move(&spot, &board, &me);
         assert_eq!(valid_move, false);
     }
 
@@ -295,10 +296,10 @@ mod valid_move_tests {
             height: 10,
             food: vec![],
             hazards: vec![],
-            snakes: vec![me],
+            snakes: vec![me.clone()],
         };
         let spot = Coord { x: 5, y: 5 };
-        let valid_move = valid_move(&spot, &board);
+        let valid_move = valid_move(&spot, &board, &me);
         assert_eq!(valid_move, false);
     }
 
@@ -307,18 +308,15 @@ mod valid_move_tests {
         let me = Battlesnake::default();
         let hettie = Battlesnake {
             name: "Hettie".to_string(),
-            body: vec![
-                Coord { x: 3, y: 2 },
-                Coord { x: 4, y: 2 },
-            ],
+            body: vec![Coord { x: 3, y: 2 }, Coord { x: 4, y: 2 }],
             ..Default::default()
         };
         let board = Board {
-            snakes: vec![hettie, me],
+            snakes: vec![hettie, me.clone()],
             ..Default::default()
         };
         let spot = Coord { x: 4, y: 2 };
-        let valid_move = valid_move(&spot, &board);
+        let valid_move = valid_move(&spot, &board, &me);
         assert_eq!(valid_move, false);
     }
 
@@ -333,10 +331,10 @@ mod valid_move_tests {
             height: 10,
             food: vec![],
             hazards: vec![],
-            snakes: vec![me],
+            snakes: vec![me.clone()],
         };
         let spot = Coord { x: 5, y: 5 };
-        let valid_move = valid_move(&spot, &board);
+        let valid_move = valid_move(&spot, &board, &me);
         assert_eq!(valid_move, true);
     }
 }

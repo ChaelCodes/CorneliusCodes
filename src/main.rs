@@ -19,7 +19,7 @@ mod logic;
 // Request types derived from https://docs.battlesnake.com/references/api#object-definitions
 // For a full example of Game Board data, see https://docs.battlesnake.com/references/api/sample-move-request
 
-#[derive(Deserialize, Serialize, Debug, Default)]
+#[derive(Clone, Deserialize, Serialize, Debug, Default)]
 pub struct Battlesnake {
     body: Vec<Coord>,
     head: Coord,
