@@ -86,17 +86,16 @@ mod spot_has_snake_tests {
     fn no_snakes_in_spot() {
         let me = Battlesnake {
             name: "CorneliusCodes".to_string(),
-            body: vec![Coord { x: 3, y: 5 },
-                       Coord { x: 4, y: 5 },
-                       Coord { x: 5, y: 5 }],
+            body: vec![
+                Coord { x: 3, y: 5 },
+                Coord { x: 4, y: 5 },
+                Coord { x: 5, y: 5 },
+            ],
             ..Default::default()
         };
         let hettie = Battlesnake {
             name: "Hettie".to_string(),
-            body: vec![
-                Coord { x: 0, y: 0 },
-                Coord { x: 1, y: 0 },
-            ],
+            body: vec![Coord { x: 0, y: 0 }, Coord { x: 1, y: 0 }],
             ..Default::default()
         };
         let snakes = vec![hettie, me];
@@ -110,10 +109,7 @@ mod spot_has_snake_tests {
         let hettie = Battlesnake {
             name: "Hettie".to_string(),
             head: Coord { x: 2, y: 3 },
-            body: vec![
-                Coord { x: 3, y: 3 },
-                Coord { x: 3, y: 2 },
-            ],
+            body: vec![Coord { x: 3, y: 3 }, Coord { x: 3, y: 2 }],
             ..Default::default()
         };
         let snakes = vec![hettie, me];
@@ -127,10 +123,7 @@ mod spot_has_snake_tests {
         let hettie = Battlesnake {
             name: "Hettie".to_string(),
             head: Coord { x: 2, y: 3 },
-            body: vec![
-                Coord { x: 3, y: 3 },
-                Coord { x: 3, y: 2 },
-            ],
+            body: vec![Coord { x: 3, y: 3 }, Coord { x: 3, y: 2 }],
             ..Default::default()
         };
         let snakes = vec![hettie, me];
@@ -142,39 +135,37 @@ mod spot_has_snake_tests {
     fn hettie_is_in_spot() {
         let me = Battlesnake {
             name: "CorneliusCodes".to_string(),
-            body: vec![Coord { x: 3, y: 5 },
-                        Coord { x: 4, y: 5 },
-                        Coord { x: 5, y: 5 }],
+            body: vec![
+                Coord { x: 3, y: 5 },
+                Coord { x: 4, y: 5 },
+                Coord { x: 5, y: 5 },
+            ],
             ..Default::default()
         };
         let hettie = Battlesnake {
             name: "Hettie".to_string(),
-            body: vec![
-                Coord { x: 0, y: 0 },
-                Coord { x: 1, y: 0 },
-            ],
+            body: vec![Coord { x: 0, y: 0 }, Coord { x: 1, y: 0 }],
             ..Default::default()
         };
         let snakes = vec![hettie, me];
         let spot = Coord { x: 0, y: 0 };
-        assert_eq!(spot_has_snake(&spot, &snakes),  true);
+        assert_eq!(spot_has_snake(&spot, &snakes), true);
     }
 
     #[test]
     fn i_am_in_spot() {
         let me = Battlesnake {
             name: "CorneliusCodes".to_string(),
-            body: vec![Coord { x: 3, y: 5 },
-                        Coord { x: 4, y: 5 },
-                        Coord { x: 5, y: 5 }],
+            body: vec![
+                Coord { x: 3, y: 5 },
+                Coord { x: 4, y: 5 },
+                Coord { x: 5, y: 5 },
+            ],
             ..Default::default()
         };
         let hettie = Battlesnake {
             name: "Hettie".to_string(),
-            body: vec![
-                Coord { x: 0, y: 0 },
-                Coord { x: 1, y: 0 },
-            ],
+            body: vec![Coord { x: 0, y: 0 }, Coord { x: 1, y: 0 }],
             ..Default::default()
         };
         let snakes = vec![hettie, me];
