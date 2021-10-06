@@ -19,7 +19,7 @@ mod logic;
 // Request types derived from https://docs.battlesnake.com/references/api#object-definitions
 // For a full example of Game Board data, see https://docs.battlesnake.com/references/api/sample-move-request
 
-#[derive(Deserialize, Serialize, Debug, Default)]
+#[derive(Clone, Deserialize, Serialize, Debug, Default)]
 pub struct Battlesnake {
     body: Vec<Coord>,
     head: Coord,
@@ -38,15 +38,15 @@ pub struct Battlesnake {
 pub struct Board {
     food: Vec<Coord>,
     hazards: Vec<Coord>,
-    height: u32,
+    height: i32,
     snakes: Vec<Battlesnake>,
-    width: u32,
+    width: i32,
 }
 
 #[derive(Copy, Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Coord {
-    x: u32,
-    y: u32,
+    x: i32,
+    y: i32,
 }
 impl PartialEq for Coord {
     fn eq(&self, other: &Self) -> bool {
@@ -54,6 +54,35 @@ impl PartialEq for Coord {
     }
 }
 impl Eq for Coord {}
+impl Coord {
+    pub fn down(&self) -> Coord {
+        Coord {
+            x: self.x,
+            y: self.y - 1,
+        }
+    }
+
+    pub fn left(&self) -> Coord {
+        Coord {
+            x: self.x - 1,
+            y: self.y,
+        }
+    }
+
+    pub fn right(&self) -> Coord {
+        Coord {
+            x: self.x + 1,
+            y: self.y,
+        }
+    }
+
+    pub fn up(&self) -> Coord {
+        Coord {
+            x: self.x,
+            y: self.y + 1,
+        }
+    }
+}
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Game {
