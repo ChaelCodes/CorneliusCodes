@@ -1,4 +1,3 @@
-use rand::seq::SliceRandom;
 use rocket_contrib::json::JsonValue;
 use std::collections::HashMap;
 
@@ -29,10 +28,10 @@ pub fn end(game: &Game, _turn: &u32, _board: &Board, _me: &Battlesnake) {
 
 pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'static str {
     let mut possible_moves: HashMap<_, _> = vec![
-        ("up", true),
-        ("down", true),
-        ("left", true),
-        ("right", true),
+        ("up", 50),
+        ("down", 50),
+        ("left", 50),
+        ("right", 50),
     ]
     .into_iter()
     .collect();
@@ -42,10 +41,10 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
 
     // Use board information to prevent your Battlesnake from moving beyond the boundaries of the board.
 
-    possible_moves.insert("left", valid_move(&my_head.left(), &board, &me));
-    possible_moves.insert("right", valid_move(&my_head.right(), &board, &me));
-    possible_moves.insert("up", valid_move(&my_head.up(), &board, &me));
-    possible_moves.insert("down", valid_move(&my_head.down(), &board, &me));
+    possible_moves.insert("left", value_of_move(&my_head.left(), &board, &me));
+    possible_moves.insert("right", value_of_move(&my_head.right(), &board, &me));
+    possible_moves.insert("up", value_of_move(&my_head.up(), &board, &me));
+    possible_moves.insert("down", value_of_move(&my_head.down(), &board, &me));
 
     // TODO: Step 4 - Find food.
     // Use board information to seek out and find food.
@@ -53,16 +52,37 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
 
     // Finally, choose a move from the available safe moves.
     // TODO: Step 5 - Select a move to make based on strategy, rather than random.
-    let moves = possible_moves
-        .into_iter()
-        .filter(|&(_, v)| v == true)
-        .map(|(k, _)| k)
-        .collect::<Vec<_>>();
-    let chosen = moves.choose(&mut rand::thread_rng()).unwrap();
+    let chosen = possible_moves.iter().max_by(|a, b| a.1.cmp(b.1)).unwrap().0;
 
     info!("{} MOVE {}", game.id, chosen);
 
     return chosen;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_move() {
+        let head = Coord { x: 9, y: 9 };
+        let me = Battlesnake {
+            body: vec![
+                head.left()
+            ],
+            head: head,
+            ..Default::default()
+        };
+        let board = Board {
+            height: 10,
+            width: 10,
+            snakes: vec![me.clone()],
+            ..Default::default()
+        };
+        let game = Game::default();
+        let get_move = get_move(&game, &0, &board, &me);
+        assert_eq!(get_move, "down");
+    }
 }
 
 fn spot_has_snake(spot: &Coord, snakes: &Vec<Battlesnake>) -> bool {
@@ -343,23 +363,24 @@ mod spot_might_have_snake_tests {
     }
 }
 
-fn valid_move(spot: &Coord, board: &Board, me: &Battlesnake) -> bool {
+// Returns the potential value of the move Cornelius
+fn value_of_move(spot: &Coord, board: &Board, me: &Battlesnake) -> u8 {
     let board_width = board.width;
     let board_height = board.height;
 
     match spot {
-        Coord { y: 0, .. } => false,
-        Coord { x: 0, .. } => false,
-        Coord { y, .. } if y == &board_width => false, // Rust is weird
-        Coord { x, .. } if x == &board_height => false,
-        spot if spot_has_snake(spot, &board.snakes) => false,
-        spot if spot_might_have_snake(spot, &board.snakes, &me) => false,
-        _ => true,
+        Coord { y: 0, .. } => 0,
+        Coord { x: 0, .. } => 0,
+        Coord { y, .. } if y == &board_width => 0, // Rust is weird
+        Coord { x, .. } if x == &board_height => 0,
+        spot if spot_has_snake(spot, &board.snakes) => 0,
+        spot if spot_might_have_snake(spot, &board.snakes, &me) => 25,
+        _ => 100,
     }
 }
 
 #[cfg(test)]
-mod valid_move_tests {
+mod value_of_move_tests {
     use super::*;
 
     // Wall Tests
@@ -376,8 +397,8 @@ mod valid_move_tests {
             snakes: vec![me.clone()],
         };
         let spot = Coord { x: 0, y: 5 };
-        let valid_move = valid_move(&spot, &board, &me);
-        assert_eq!(valid_move, false);
+        let valid_move = value_of_move(&spot, &board, &me);
+        assert_eq!(valid_move, 0);
     }
 
     #[test]
@@ -393,8 +414,8 @@ mod valid_move_tests {
             snakes: vec![me.clone()],
         };
         let spot = Coord { x: 10, y: 5 };
-        let valid_move = valid_move(&spot, &board, &me);
-        assert_eq!(valid_move, false);
+        let valid_move = value_of_move(&spot, &board, &me);
+        assert_eq!(valid_move, 0);
     }
 
     #[test]
@@ -410,8 +431,8 @@ mod valid_move_tests {
             snakes: vec![me.clone()],
         };
         let spot = Coord { x: 5, y: 10 };
-        let valid_move = valid_move(&spot, &board, &me);
-        assert_eq!(valid_move, false);
+        let valid_move = value_of_move(&spot, &board, &me);
+        assert_eq!(valid_move, 0);
     }
 
     #[test]
@@ -427,8 +448,8 @@ mod valid_move_tests {
             snakes: vec![me.clone()],
         };
         let spot = Coord { x: 5, y: 0 };
-        let valid_move = valid_move(&spot, &board, &me);
-        assert_eq!(valid_move, false);
+        let valid_move = value_of_move(&spot, &board, &me);
+        assert_eq!(valid_move, 0);
     }
 
     // Collision Tests
@@ -447,8 +468,8 @@ mod valid_move_tests {
             snakes: vec![me.clone()],
         };
         let spot = Coord { x: 5, y: 5 };
-        let valid_move = valid_move(&spot, &board, &me);
-        assert_eq!(valid_move, false);
+        let valid_move = value_of_move(&spot, &board, &me);
+        assert_eq!(valid_move, 0);
     }
 
     #[test]
@@ -464,8 +485,28 @@ mod valid_move_tests {
             ..Default::default()
         };
         let spot = Coord { x: 4, y: 2 };
-        let valid_move = valid_move(&spot, &board, &me);
-        assert_eq!(valid_move, false);
+        let valid_move = value_of_move(&spot, &board, &me);
+        assert_eq!(valid_move, 0);
+    }
+
+    #[test]
+    fn potential_snake_head() {
+        let me = Battlesnake::default();
+        let head = Coord { x: 3, y: 5 };
+        let hettie = Battlesnake {
+            id: "hettie".to_string(),
+            name: "HettieCodes".to_string(),
+            head: head,
+            length: 4,
+            ..Default::default()
+        };
+        let spot = head.right();
+        let board = Board {
+            snakes: vec![me.clone(), hettie],
+            ..Default::default()
+        };
+        let valid_move = value_of_move(&spot, &board, &me);
+        assert_eq!(valid_move, 25);
     }
 
     #[test]
@@ -482,7 +523,7 @@ mod valid_move_tests {
             snakes: vec![me.clone()],
         };
         let spot = Coord { x: 5, y: 5 };
-        let valid_move = valid_move(&spot, &board, &me);
-        assert_eq!(valid_move, true);
+        let valid_move = value_of_move(&spot, &board, &me);
+        assert_eq!(valid_move, 100);
     }
 }
