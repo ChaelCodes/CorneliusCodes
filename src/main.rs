@@ -84,7 +84,7 @@ impl Coord {
     }
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 pub struct Game {
     id: String,
     ruleset: HashMap<String, Value>,
