@@ -454,6 +454,9 @@ fn spot_modifier(spot: &Coord, board: &Board, me: &Battlesnake) -> i32 {
         let leftover_health = me.health - 14;
         modifier -= 100 - leftover_health;
     }
+    if spot_has_food(spot, &board) {
+        modifier += 75;
+    }
     modifier
 }
 
@@ -501,6 +504,25 @@ mod spot_modifier_tests {
         };
         let spot = Coord { x: 3, y: 6 };
         assert_eq!(spot_modifier(&spot, &board, &me), -75);
+    }
+
+    #[test]
+    fn spot_with_food() {
+        let board = Board {
+            food: vec![
+                Coord { x: 3, y: 0},
+                Coord { x: 2, y: 6},
+                Coord { x: 10, y: 5},
+            ],
+            ..Default::default()
+        };
+        let me = Battlesnake {
+            name: "CorneliusCodes".to_string(),
+            health: 75,
+            ..Default::default()
+        };
+        let spot = Coord { x: 2, y: 6 };
+        assert_eq!(spot_modifier(&spot, &board, &me), 75);
     }
 }
 
@@ -691,6 +713,21 @@ mod value_of_move_tests {
         let spot = Coord { x: 0, y: 5 };
         let value_of_move = value_of_move(&spot, &board, &me);
         assert_eq!(value_of_move, 50);
+    }
+
+    #[test]
+    fn eats_food() {
+        let me = Battlesnake {
+            health: 100,
+            ..Default::default()
+        };
+        let board = Board {
+            food: vec![Coord { x: 5, y: 5 }],
+            ..Default::default()
+        };
+        let spot = Coord { x: 5, y: 5 };
+        let value_of_move = value_of_move(&spot, &board, &me);
+        assert_eq!(value_of_move, 175);
     }
 
     #[test]
