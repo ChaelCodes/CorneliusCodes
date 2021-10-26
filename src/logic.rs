@@ -79,6 +79,43 @@ mod tests {
     }
 }
 
+fn spot_has_food(spot: &Coord, board: &Board) -> bool {
+    board.food.contains(&spot)
+}
+
+#[cfg(test)]
+mod spot_has_food_test {
+    use super::*;
+
+    #[test]
+    fn hazardous_spot_test() {
+        let board = Board {
+            food: vec![
+                Coord { x: 10, y: 0},
+                Coord { x: 7, y: 6},
+                Coord { x: 5, y: 3},
+            ],
+            ..Default::default()
+        };
+        let spot = Coord { x: 7, y: 6 };
+        assert_eq!(spot_has_food(&spot, &board), true);
+    }
+
+    #[test]
+    fn safe_spot_test() {
+        let board = Board {
+            food: vec![
+                Coord { x: 10, y: 0},
+                Coord { x: 7, y: 6},
+                Coord { x: 5, y: 3},
+            ],
+            ..Default::default()
+        };
+        let spot = Coord { x: 3, y: 5 };
+        assert_eq!(spot_has_food(&spot, &board), false);
+    }
+}
+
 fn spot_has_hazards(spot: &Coord, board: &Board) -> bool {
     board.hazards.contains(spot)
 }
