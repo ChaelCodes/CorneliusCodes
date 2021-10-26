@@ -23,7 +23,7 @@ mod logic;
 pub struct Battlesnake {
     body: Vec<Coord>,
     head: Coord,
-    health: u32,
+    health: i32,
     id: String,
     latency: String,
     length: u32,

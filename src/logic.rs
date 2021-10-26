@@ -445,23 +445,82 @@ mod spot_might_have_snake_tests {
     }
 }
 
+fn spot_modifier(spot: &Coord, board: &Board, me: &Battlesnake) -> i32 {
+    let mut modifier = 0;
+    if spot_might_have_snake(spot, &board.snakes, &me) {
+        modifier -= 75;
+    }
+    if spot_has_hazards(spot, &board) {
+        let leftover_health = me.health - 14;
+        modifier -= 100 - leftover_health;
+    }
+    modifier
+}
+
+#[cfg(test)]
+mod spot_modifier_tests {
+    use super::*;
+
+    #[test]
+    fn spot_with_hazards() {
+        let board = Board {
+            hazards: vec![
+                Coord { x: 2, y: 0},
+                Coord { x: 2, y: 2},
+                Coord { x: 2, y: 4},
+                Coord { x: 2, y: 8},
+                Coord { x: 2, y: 10},
+            ],
+            ..Default::default()
+        };
+        let me = Battlesnake {
+            name: "CorneliusCodes".to_string(),
+            health: 75,
+            ..Default::default()
+        };
+        let spot = Coord { x: 2, y: 4 };
+        assert_eq!(spot_modifier(&spot, &board, &me), -39);
+    }
+
+    #[test]
+    fn spot_where_snakes_may_soon_be() {
+        let me = Battlesnake::default();
+        let hettie = Battlesnake {
+            id: "hettie".to_string(),
+            name: "HettieCodes".to_string(),
+            head: Coord { x: 3, y: 5 },
+            length: 4,
+            ..Default::default()
+        };
+        let board = Board {
+            snakes: vec![
+                me.clone(),
+                hettie,
+            ],
+            ..Default::default()
+        };
+        let spot = Coord { x: 3, y: 6 };
+        assert_eq!(spot_modifier(&spot, &board, &me), -75);
+    }
+}
+
 // Returns the potential value of the move Cornelius
-fn value_of_move(spot: &Coord, board: &Board, me: &Battlesnake) -> u32 {
+fn value_of_move(spot: &Coord, board: &Board, me: &Battlesnake) -> i32 {
     let board_width = board.width;
     let board_height = board.height;
 
-    match spot {
+    let base_value = match spot {
         Coord { y: -1, .. } => 0,
         Coord { x: -1, .. } => 0,
         Coord { y, .. } if y == &board_width => 0, // Rust is weird
         Coord { x, .. } if x == &board_height => 0,
-        spot if spot_has_snake(spot, &board.snakes) => 0,
-        spot if spot_might_have_snake(spot, &board.snakes, me) => 25,
-        spot if spot_has_hazards(spot, board) => &me.health - 14,
+        spot if spot_has_snake(spot, &board.snakes) => -1,
         Coord { y: 0, .. } => 50,
         Coord { x: 0, .. } => 50,
         _ => 100,
-    }
+    };
+
+    base_value + spot_modifier(spot, &board, &me)
 }
 
 #[cfg(test)]
