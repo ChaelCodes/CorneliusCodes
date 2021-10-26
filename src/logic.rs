@@ -448,7 +448,7 @@ mod spot_might_have_snake_tests {
 fn spot_modifier(spot: &Coord, board: &Board, me: &Battlesnake) -> i32 {
     let mut modifier = 0;
     if spot_might_have_snake(spot, &board.snakes, &me) {
-        modifier -= 75;
+        modifier -= 80;
     }
     if spot_has_hazards(spot, &board) {
         let leftover_health = me.health - 14;
@@ -503,7 +503,7 @@ mod spot_modifier_tests {
             ..Default::default()
         };
         let spot = Coord { x: 3, y: 6 };
-        assert_eq!(spot_modifier(&spot, &board, &me), -75);
+        assert_eq!(spot_modifier(&spot, &board, &me), -80);
     }
 
     #[test]
@@ -672,7 +672,7 @@ mod value_of_move_tests {
             ..Default::default()
         };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 25);
+        assert_eq!(valid_move, 20);
     }
 
     // Board Hazards/Dangers
