@@ -517,7 +517,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 5, y: 5 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 0);
+        assert_eq!(valid_move, 1);
     }
 
     #[test]
@@ -534,7 +534,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 4, y: 2 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 0);
+        assert_eq!(valid_move, 1);
     }
 
     #[test]
