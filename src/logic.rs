@@ -532,11 +532,11 @@ fn value_of_move(spot: &Coord, board: &Board, me: &Battlesnake) -> i32 {
     let board_height = board.height;
 
     let base_value = match spot {
-        Coord { y: -1, .. } => 0,
-        Coord { x: -1, .. } => 0,
-        Coord { y, .. } if y == &board_width => 0, // Rust is weird
-        Coord { x, .. } if x == &board_height => 0,
-        spot if spot_has_snake(spot, &board.snakes) => -1,
+        Coord { y: -1, .. } => -100,
+        Coord { x: -1, .. } => -100,
+        Coord { y, .. } if y == &board_width => -100, // Rust is weird
+        Coord { x, .. } if x == &board_height => -100,
+        spot if spot_has_snake(spot, &board.snakes) => 1,
         Coord { y: 0, .. } => 50,
         Coord { x: 0, .. } => 50,
         _ => 100,
@@ -564,7 +564,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: -1, y: 5 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 0);
+        assert_eq!(valid_move, -100);
     }
 
     #[test]
@@ -581,7 +581,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 10, y: 5 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 0);
+        assert_eq!(valid_move, -100);
     }
 
     #[test]
@@ -598,7 +598,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 5, y: 10 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 0);
+        assert_eq!(valid_move, -100);
     }
 
     #[test]
@@ -615,7 +615,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 5, y: -1 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 0);
+        assert_eq!(valid_move, -100);
     }
 
     // Collision Tests
