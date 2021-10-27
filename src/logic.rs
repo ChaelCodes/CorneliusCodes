@@ -79,6 +79,43 @@ mod tests {
     }
 }
 
+fn spot_has_food(spot: &Coord, board: &Board) -> bool {
+    board.food.contains(&spot)
+}
+
+#[cfg(test)]
+mod spot_has_food_test {
+    use super::*;
+
+    #[test]
+    fn hazardous_spot_test() {
+        let board = Board {
+            food: vec![
+                Coord { x: 10, y: 0},
+                Coord { x: 7, y: 6},
+                Coord { x: 5, y: 3},
+            ],
+            ..Default::default()
+        };
+        let spot = Coord { x: 7, y: 6 };
+        assert_eq!(spot_has_food(&spot, &board), true);
+    }
+
+    #[test]
+    fn safe_spot_test() {
+        let board = Board {
+            food: vec![
+                Coord { x: 10, y: 0},
+                Coord { x: 7, y: 6},
+                Coord { x: 5, y: 3},
+            ],
+            ..Default::default()
+        };
+        let spot = Coord { x: 3, y: 5 };
+        assert_eq!(spot_has_food(&spot, &board), false);
+    }
+}
+
 fn spot_has_hazards(spot: &Coord, board: &Board) -> bool {
     board.hazards.contains(spot)
 }
@@ -408,23 +445,104 @@ mod spot_might_have_snake_tests {
     }
 }
 
+fn spot_modifier(spot: &Coord, board: &Board, me: &Battlesnake) -> i32 {
+    let mut modifier = 0;
+    if spot_might_have_snake(spot, &board.snakes, &me) {
+        modifier -= 80;
+    }
+    if spot_has_hazards(spot, &board) {
+        let leftover_health = me.health - 14;
+        modifier -= 100 - leftover_health;
+    }
+    if spot_has_food(spot, &board) {
+        modifier += 75;
+    }
+    modifier
+}
+
+#[cfg(test)]
+mod spot_modifier_tests {
+    use super::*;
+
+    #[test]
+    fn spot_with_hazards() {
+        let board = Board {
+            hazards: vec![
+                Coord { x: 2, y: 0},
+                Coord { x: 2, y: 2},
+                Coord { x: 2, y: 4},
+                Coord { x: 2, y: 8},
+                Coord { x: 2, y: 10},
+            ],
+            ..Default::default()
+        };
+        let me = Battlesnake {
+            name: "CorneliusCodes".to_string(),
+            health: 75,
+            ..Default::default()
+        };
+        let spot = Coord { x: 2, y: 4 };
+        assert_eq!(spot_modifier(&spot, &board, &me), -39);
+    }
+
+    #[test]
+    fn spot_where_snakes_may_soon_be() {
+        let me = Battlesnake::default();
+        let hettie = Battlesnake {
+            id: "hettie".to_string(),
+            name: "HettieCodes".to_string(),
+            head: Coord { x: 3, y: 5 },
+            length: 4,
+            ..Default::default()
+        };
+        let board = Board {
+            snakes: vec![
+                me.clone(),
+                hettie,
+            ],
+            ..Default::default()
+        };
+        let spot = Coord { x: 3, y: 6 };
+        assert_eq!(spot_modifier(&spot, &board, &me), -80);
+    }
+
+    #[test]
+    fn spot_with_food() {
+        let board = Board {
+            food: vec![
+                Coord { x: 3, y: 0},
+                Coord { x: 2, y: 6},
+                Coord { x: 10, y: 5},
+            ],
+            ..Default::default()
+        };
+        let me = Battlesnake {
+            name: "CorneliusCodes".to_string(),
+            health: 75,
+            ..Default::default()
+        };
+        let spot = Coord { x: 2, y: 6 };
+        assert_eq!(spot_modifier(&spot, &board, &me), 75);
+    }
+}
+
 // Returns the potential value of the move Cornelius
-fn value_of_move(spot: &Coord, board: &Board, me: &Battlesnake) -> u32 {
+fn value_of_move(spot: &Coord, board: &Board, me: &Battlesnake) -> i32 {
     let board_width = board.width;
     let board_height = board.height;
 
-    match spot {
-        Coord { y: -1, .. } => 0,
-        Coord { x: -1, .. } => 0,
-        Coord { y, .. } if y == &board_width => 0, // Rust is weird
-        Coord { x, .. } if x == &board_height => 0,
-        spot if spot_has_snake(spot, &board.snakes) => 0,
-        spot if spot_might_have_snake(spot, &board.snakes, me) => 25,
-        spot if spot_has_hazards(spot, board) => &me.health - 14,
+    let base_value = match spot {
+        Coord { y: -1, .. } => -100,
+        Coord { x: -1, .. } => -100,
+        Coord { y, .. } if y == &board_width => -100, // Rust is weird
+        Coord { x, .. } if x == &board_height => -100,
+        spot if spot_has_snake(spot, &board.snakes) => 1,
         Coord { y: 0, .. } => 50,
         Coord { x: 0, .. } => 50,
         _ => 100,
-    }
+    };
+
+    base_value + spot_modifier(spot, &board, &me)
 }
 
 #[cfg(test)]
@@ -446,7 +564,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: -1, y: 5 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 0);
+        assert_eq!(valid_move, -100);
     }
 
     #[test]
@@ -463,7 +581,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 10, y: 5 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 0);
+        assert_eq!(valid_move, -100);
     }
 
     #[test]
@@ -480,7 +598,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 5, y: 10 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 0);
+        assert_eq!(valid_move, -100);
     }
 
     #[test]
@@ -497,7 +615,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 5, y: -1 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 0);
+        assert_eq!(valid_move, -100);
     }
 
     // Collision Tests
@@ -517,7 +635,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 5, y: 5 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 0);
+        assert_eq!(valid_move, 1);
     }
 
     #[test]
@@ -534,7 +652,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 4, y: 2 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 0);
+        assert_eq!(valid_move, 1);
     }
 
     #[test]
@@ -554,7 +672,7 @@ mod value_of_move_tests {
             ..Default::default()
         };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 25);
+        assert_eq!(valid_move, 20);
     }
 
     // Board Hazards/Dangers
@@ -595,6 +713,21 @@ mod value_of_move_tests {
         let spot = Coord { x: 0, y: 5 };
         let value_of_move = value_of_move(&spot, &board, &me);
         assert_eq!(value_of_move, 50);
+    }
+
+    #[test]
+    fn eats_food() {
+        let me = Battlesnake {
+            health: 100,
+            ..Default::default()
+        };
+        let board = Board {
+            food: vec![Coord { x: 5, y: 5 }],
+            ..Default::default()
+        };
+        let spot = Coord { x: 5, y: 5 };
+        let value_of_move = value_of_move(&spot, &board, &me);
+        assert_eq!(value_of_move, 175);
     }
 
     #[test]
