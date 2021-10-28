@@ -12,7 +12,7 @@ pub fn get_info() -> JsonValue {
     return json!({
         "apiversion": "1",
         "author": "ChaelCodes",
-        "color": "#F6661E",
+        "color": "#c88b4c",
         "head": "bendr",
         "tail": "round-bum",
     });
