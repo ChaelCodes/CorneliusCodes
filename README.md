@@ -15,9 +15,22 @@ For example, rather than saying "We need to fix the bug where they don't go to `
 
 * [Rust](https://www.rust-lang.org/)
 * [Rocket](https://rocket.rs)
+* [Docker](https://www.docker.com")
 
 ## Running Tests
+
 Cornelius's test suite can be run with `cargo test`.
+
+## Running in container
+
+You can run Battlesnake in container with Docker:
+
+```bash
+docker build --build-arg PORT=3000 -t cornelius-codes .
+docker run --name cornelius-codes -d -p 3000:3000 cornelius-codes
+```
+The port build argument is optional and will default to 8080. Remember
+to expose it to host in `docker run` command
 
 ## Playing Battlesnake
 
