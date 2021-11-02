@@ -27,27 +27,17 @@ pub fn end(game: &Game, _turn: &u32, _board: &Board, _me: &Battlesnake) {
 }
 
 pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'static str {
-    let mut possible_moves: HashMap<_, _> =
-        vec![("up", 50), ("down", 50), ("left", 50), ("right", 50)]
-            .into_iter()
-            .collect();
-
-    // Step 0: Don't let your Battlesnake move back in on its own neck
     let my_head = &me.head;
 
-    // Use board information to prevent your Battlesnake from moving beyond the boundaries of the board.
+    let possible_moves: HashMap<_, _> = vec![
+        ("up", value_of_move(&my_head.up(), board, me)),
+        ("down", value_of_move(&my_head.down(), board, me)),
+        ("left", value_of_move(&my_head.left(), board, me)),
+        ("right", value_of_move(&my_head.right(), board, me)),
+    ]
+    .into_iter()
+    .collect();
 
-    possible_moves.insert("left", value_of_move(&my_head.left(), board, me));
-    possible_moves.insert("right", value_of_move(&my_head.right(), board, me));
-    possible_moves.insert("up", value_of_move(&my_head.up(), board, me));
-    possible_moves.insert("down", value_of_move(&my_head.down(), board, me));
-
-    // TODO: Step 4 - Find food.
-    // Use board information to seek out and find food.
-    // food = move_req.board.food
-
-    // Finally, choose a move from the available safe moves.
-    // TODO: Step 5 - Select a move to make based on strategy, rather than random.
     let chosen = possible_moves.iter().max_by(|a, b| a.1.cmp(b.1)).unwrap().0;
 
     info!("{} MOVE {}", game.id, chosen);
@@ -56,7 +46,7 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
 }
 
 #[cfg(test)]
-mod tests {
+mod get_move_tests {
     use super::*;
 
     #[test]
