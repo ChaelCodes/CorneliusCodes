@@ -541,17 +541,22 @@ mod spot_modifier_tests {
     }
 }
 
+fn valid_move(spot: &Coord, board: &Board) -> bool {
+    match spot {
+        Coord { y: -1, .. } => false,
+        Coord { x: -1, .. } => false,
+        Coord { y, .. } if y == &board.width => false,
+        Coord { x, .. } if x == &board.height => false,
+        spot if spot_has_snake(spot, &board.snakes) => false,
+        _ => true,
+    }
+}
+
 // Returns the potential value of the move Cornelius
 fn value_of_move(spot: &Coord, board: &Board, me: &Battlesnake) -> i32 {
-    let board_width = board.width;
-    let board_height = board.height;
-
     let base_value = match spot {
-        Coord { y: -1, .. } => -100,
-        Coord { x: -1, .. } => -100,
-        Coord { y, .. } if y == &board_width => -100, // Rust is weird
-        Coord { x, .. } if x == &board_height => -100,
-        spot if spot_has_snake(spot, &board.snakes) => -99,
+        spot if spot_has_snake(spot, &board.snakes) => -99, // Bite someone else before you bite the dust!
+        spot if !valid_move(&spot, &board) => -100,
         Coord { y: 0, .. } => 60,
         Coord { x: 0, .. } => 60,
         _ => 100,
