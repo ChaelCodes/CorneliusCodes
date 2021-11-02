@@ -440,12 +440,11 @@ fn spot_modifier(spot: &Coord, board: &Board, me: &Battlesnake) -> i32 {
     if spot_might_have_snake(spot, &board.snakes, &me) {
         modifier -= 80;
     }
-    if spot_has_hazards(spot, &board) {
-        let leftover_health = me.health - 14;
-        modifier -= 100 - leftover_health;
-    }
     if spot_has_food(spot, &board) {
         modifier += 75;
+    } else if spot_has_hazards(spot, &board) {
+        let leftover_health = me.health - 14;
+        modifier -= 100 - leftover_health;
     }
     modifier
 }
@@ -512,6 +511,32 @@ mod spot_modifier_tests {
             ..Default::default()
         };
         let spot = Coord { x: 2, y: 6 };
+        assert_eq!(spot_modifier(&spot, &board, &me), 75);
+    }
+
+    #[test]
+    fn spot_with_food_and_hazard() {
+        let board = Board {
+            food: vec![
+                Coord { x: 2, y: 4},
+                Coord { x: 2, y: 6},
+                Coord { x: 10, y: 5},
+            ],
+            hazards: vec![
+                Coord { x: 2, y: 0},
+                Coord { x: 2, y: 2},
+                Coord { x: 2, y: 4},
+                Coord { x: 2, y: 8},
+                Coord { x: 2, y: 10},
+            ],
+            ..Default::default()
+        };
+        let me = Battlesnake {
+            name: "CorneliusCodes".to_string(),
+            health: 75,
+            ..Default::default()
+        };
+        let spot = Coord { x: 2, y: 4 };
         assert_eq!(spot_modifier(&spot, &board, &me), 75);
     }
 }
