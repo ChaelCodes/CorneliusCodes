@@ -81,9 +81,9 @@ mod spot_has_food_test {
     fn hazardous_spot_test() {
         let board = Board {
             food: vec![
-                Coord { x: 10, y: 0},
-                Coord { x: 7, y: 6},
-                Coord { x: 5, y: 3},
+                Coord { x: 10, y: 0 },
+                Coord { x: 7, y: 6 },
+                Coord { x: 5, y: 3 },
             ],
             ..Default::default()
         };
@@ -95,9 +95,9 @@ mod spot_has_food_test {
     fn safe_spot_test() {
         let board = Board {
             food: vec![
-                Coord { x: 10, y: 0},
-                Coord { x: 7, y: 6},
-                Coord { x: 5, y: 3},
+                Coord { x: 10, y: 0 },
+                Coord { x: 7, y: 6 },
+                Coord { x: 5, y: 3 },
             ],
             ..Default::default()
         };
@@ -457,11 +457,11 @@ mod spot_modifier_tests {
     fn spot_with_hazards() {
         let board = Board {
             hazards: vec![
-                Coord { x: 2, y: 0},
-                Coord { x: 2, y: 2},
-                Coord { x: 2, y: 4},
-                Coord { x: 2, y: 8},
-                Coord { x: 2, y: 10},
+                Coord { x: 2, y: 0 },
+                Coord { x: 2, y: 2 },
+                Coord { x: 2, y: 4 },
+                Coord { x: 2, y: 8 },
+                Coord { x: 2, y: 10 },
             ],
             ..Default::default()
         };
@@ -485,10 +485,7 @@ mod spot_modifier_tests {
             ..Default::default()
         };
         let board = Board {
-            snakes: vec![
-                me.clone(),
-                hettie,
-            ],
+            snakes: vec![me.clone(), hettie],
             ..Default::default()
         };
         let spot = Coord { x: 3, y: 6 };
@@ -499,9 +496,9 @@ mod spot_modifier_tests {
     fn spot_with_food() {
         let board = Board {
             food: vec![
-                Coord { x: 3, y: 0},
-                Coord { x: 2, y: 6},
-                Coord { x: 10, y: 5},
+                Coord { x: 3, y: 0 },
+                Coord { x: 2, y: 6 },
+                Coord { x: 10, y: 5 },
             ],
             ..Default::default()
         };
@@ -518,16 +515,16 @@ mod spot_modifier_tests {
     fn spot_with_food_and_hazard() {
         let board = Board {
             food: vec![
-                Coord { x: 2, y: 4},
-                Coord { x: 2, y: 6},
-                Coord { x: 10, y: 5},
+                Coord { x: 2, y: 4 },
+                Coord { x: 2, y: 6 },
+                Coord { x: 10, y: 5 },
             ],
             hazards: vec![
-                Coord { x: 2, y: 0},
-                Coord { x: 2, y: 2},
-                Coord { x: 2, y: 4},
-                Coord { x: 2, y: 8},
-                Coord { x: 2, y: 10},
+                Coord { x: 2, y: 0 },
+                Coord { x: 2, y: 2 },
+                Coord { x: 2, y: 4 },
+                Coord { x: 2, y: 8 },
+                Coord { x: 2, y: 10 },
             ],
             ..Default::default()
         };
