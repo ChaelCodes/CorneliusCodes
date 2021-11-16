@@ -562,10 +562,11 @@ fn spot_modifier(spot: &Coord, board: &Board, me: &Battlesnake) -> i32 {
         let leftover_health = me.health - 14;
         modifier -= 100 - leftover_health;
     }
-    if remaining_space(spot, &board, &me) >= me.length {
+    let spaces = remaining_space(spot, &board, &me);
+    if spaces >= me.length {
         modifier += 50
     } else {
-        modifier -= 80
+        modifier -= 80 - spaces
     }
     modifier
 }
