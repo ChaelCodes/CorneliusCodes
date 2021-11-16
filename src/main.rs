@@ -19,19 +19,37 @@ mod logic;
 // Request types derived from https://docs.battlesnake.com/references/api#object-definitions
 // For a full example of Game Board data, see https://docs.battlesnake.com/references/api/sample-move-request
 
-#[derive(Clone, Deserialize, Serialize, Debug, Default)]
+#[derive(Clone, Deserialize, Serialize, Debug)]
 pub struct Battlesnake {
     body: Vec<Coord>,
     head: Coord,
     health: i32,
     id: String,
     latency: String,
-    length: u32,
+    length: i32,
     name: String,
 
     // Used in non-standard game modes
     shout: Option<String>,
     squad: Option<String>,
+}
+
+impl Default for Battlesnake {
+    fn default() -> Battlesnake {
+        Self {
+            body: Vec::<Coord>::default(),
+            head: Coord::default(),
+            health: 100,
+            id: "CorneliusCodes".to_string(),
+            latency: String::default(),
+            length: 4,
+            name: "CorneliusCodes".to_string(),
+
+            // Used in non-standard game modes
+            shout: Option::<String>::default(),
+            squad: Option::<String>::default(),
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize, Debug, Default)]

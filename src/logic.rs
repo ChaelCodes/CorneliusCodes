@@ -435,6 +435,122 @@ mod spot_might_have_snake_tests {
     }
 }
 
+fn remaining_space(spot: &Coord, board: &Board, me: &Battlesnake) -> i32 {
+    let available_spaces = check_spot_for_space(spot, board, me.length, [].to_vec());
+    available_spaces.len() as i32
+}
+
+fn check_spot_for_space(spot: &Coord, board: &Board, my_length: i32, mut available_spaces: Vec<Coord>) -> Vec<Coord> {
+    if my_length <= available_spaces.len() as i32 {
+            return available_spaces;
+    }
+    if available_spaces.contains(spot) {
+        return available_spaces;
+    }
+
+    if valid_move(spot, board) {
+        available_spaces.push(*spot);
+
+        if valid_move(&spot.right(), board) {
+            available_spaces = check_spot_for_space(&spot.right(), board, my_length, available_spaces);
+        }
+        if valid_move(&spot.left(), board) {
+            available_spaces = check_spot_for_space(&spot.left(), board, my_length, available_spaces);
+        }
+        if valid_move(&spot.up(), board) {
+            available_spaces = check_spot_for_space(&spot.up(), board, my_length, available_spaces);
+        }
+        if valid_move(&spot.down(), board) {
+            available_spaces = check_spot_for_space(&spot.down(), board, my_length, available_spaces);
+        }
+    }
+    available_spaces
+}
+
+#[cfg(test)]
+mod remaining_space {
+    use super::*;
+
+    #[test]
+    fn spot_is_big_enough_for_corney() {
+        let me = Battlesnake {
+            name: "CorneliusCodes".to_string(),
+            body: vec![
+                Coord { x: 3, y: 5 },
+                Coord { x: 4, y: 5 },
+                Coord { x: 5, y: 5 },
+            ],
+            length: 4,
+            ..Default::default()
+        };
+        let board = Board {
+            height: 10,
+            width: 10,
+            snakes: vec![me.clone()],
+            ..Default::default()
+        };
+        let spot = Coord { x: 0, y: 5 };
+        assert_eq!(remaining_space(&spot, &board, &me), 4);
+    }
+
+    #[test]
+    fn spot_is_too_small_for_corney() {
+        let me = Battlesnake {
+            name: "CorneliusCodes".to_string(),
+            body: vec![
+                Coord { x: 0, y: 8 },
+                Coord { x: 1, y: 8 },
+                Coord { x: 2, y: 8 },
+                Coord { x: 3, y: 8 },
+                Coord { x: 4, y: 8 },
+                Coord { x: 5, y: 8 },
+                Coord { x: 5, y: 9 },
+                Coord { x: 4, y: 9 },
+                Coord { x: 3, y: 9 }
+            ],
+            length: 7,
+            ..Default::default()
+        };
+        let board = Board {
+            height: 10,
+            width: 10,
+            snakes: vec![me.clone()],
+            ..Default::default()
+        };
+        let spot = Coord { x: 2, y: 9 };
+        assert_eq!(remaining_space(&spot, &board, &me), 3);
+    }
+
+    #[test]
+    fn spot_to_the_left_is_corney_sized() {
+        let head = Coord { x: 3, y: 8 };
+        let me = Battlesnake {
+            name: "CorneliusCodes".to_string(),
+            head: head.clone(),
+            body: vec![
+                Coord { x: 3, y: 0 },
+                Coord { x: 4, y: 0 },
+                Coord { x: 5, y: 0 },
+                Coord { x: 4, y: 1 },
+                Coord { x: 5, y: 1 },
+                Coord { x: 0, y: 2 },
+                Coord { x: 1, y: 2 },
+                Coord { x: 2, y: 2 },
+            ],
+            length: 7,
+            ..Default::default()
+        };
+        let board = Board {
+            height: 10,
+            width: 10,
+            snakes: vec![me.clone()],
+            ..Default::default()
+        };
+        let spot = Coord { x: 2, y: 1 };
+        assert_eq!(remaining_space(&spot, &board, &me), 7);
+    }
+}
+
 fn spot_modifier(spot: &Coord, board: &Board, me: &Battlesnake) -> i32 {
     let mut modifier = 0;
     if spot_might_have_snake(spot, &board.snakes, &me) {
@@ -445,6 +561,11 @@ fn spot_modifier(spot: &Coord, board: &Board, me: &Battlesnake) -> i32 {
     } else if spot_has_hazards(spot, &board) {
         let leftover_health = me.health - 14;
         modifier -= 100 - leftover_health;
+    }
+    if remaining_space(spot, &board, &me) >= me.length {
+        modifier += 50
+    } else {
+        modifier -= 80
     }
     modifier
 }
@@ -471,7 +592,7 @@ mod spot_modifier_tests {
             ..Default::default()
         };
         let spot = Coord { x: 2, y: 4 };
-        assert_eq!(spot_modifier(&spot, &board, &me), -39);
+        assert_eq!(spot_modifier(&spot, &board, &me), 11);
     }
 
     #[test]
@@ -489,7 +610,7 @@ mod spot_modifier_tests {
             ..Default::default()
         };
         let spot = Coord { x: 3, y: 6 };
-        assert_eq!(spot_modifier(&spot, &board, &me), -80);
+        assert_eq!(spot_modifier(&spot, &board, &me), -30);
     }
 
     #[test]
@@ -508,7 +629,7 @@ mod spot_modifier_tests {
             ..Default::default()
         };
         let spot = Coord { x: 2, y: 6 };
-        assert_eq!(spot_modifier(&spot, &board, &me), 75);
+        assert_eq!(spot_modifier(&spot, &board, &me), 125);
     }
 
     #[test]
@@ -534,7 +655,7 @@ mod spot_modifier_tests {
             ..Default::default()
         };
         let spot = Coord { x: 2, y: 4 };
-        assert_eq!(spot_modifier(&spot, &board, &me), 75);
+        assert_eq!(spot_modifier(&spot, &board, &me), 125);
     }
 }
 
@@ -581,7 +702,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: -1, y: 5 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, -100);
+        assert_eq!(valid_move, -180);
     }
 
     #[test]
@@ -598,7 +719,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 10, y: 5 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, -100);
+        assert_eq!(valid_move, -180);
     }
 
     #[test]
@@ -615,7 +736,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 5, y: 10 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, -100);
+        assert_eq!(valid_move, -180);
     }
 
     #[test]
@@ -632,7 +753,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 5, y: -1 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, -100);
+        assert_eq!(valid_move, -180);
     }
 
     // Collision Tests
@@ -652,7 +773,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 5, y: 5 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, -99);
+        assert_eq!(valid_move, -179);
     }
 
     #[test]
@@ -669,7 +790,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 4, y: 2 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, -99);
+        assert_eq!(valid_move, -179);
     }
 
     #[test]
@@ -689,7 +810,7 @@ mod value_of_move_tests {
             ..Default::default()
         };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 20);
+        assert_eq!(valid_move, 70);
     }
 
     // Board Hazards/Dangers
@@ -716,7 +837,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 10, y: 7 };
         let value_of_move = value_of_move(&spot, &board, &me);
-        assert_eq!(value_of_move, 65);
+        assert_eq!(value_of_move, 115);
     }
 
     #[test]
@@ -729,7 +850,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 0, y: 5 };
         let value_of_move = value_of_move(&spot, &board, &me);
-        assert_eq!(value_of_move, 60);
+        assert_eq!(value_of_move, 110);
     }
 
     #[test]
@@ -744,7 +865,7 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 5, y: 5 };
         let value_of_move = value_of_move(&spot, &board, &me);
-        assert_eq!(value_of_move, 175);
+        assert_eq!(value_of_move, 225);
     }
 
     #[test]
@@ -762,6 +883,6 @@ mod value_of_move_tests {
         };
         let spot = Coord { x: 5, y: 5 };
         let valid_move = value_of_move(&spot, &board, &me);
-        assert_eq!(valid_move, 100);
+        assert_eq!(valid_move, 150);
     }
 }
